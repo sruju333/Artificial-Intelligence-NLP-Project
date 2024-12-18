@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Status Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        label, select, textarea, input {
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 10px;
+        }
+        input[type="submit"] {
+            width: 30%;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Predict StackOverflow Question Status</h1>
+    <form id="predict-form">
+        <label for="text">Enter Question Text:</label><br>
+        <textarea id="text" rows="4" cols="50"></textarea><br><br>
+        
+        <label for="model">Choose Model:</label><br>
+        <select id="model">
+            <option value="nn">Basic Neural Network</option>
+            <option value="dnn">Deep Neural Network</option>
+        </select><br><br>
+        
+        <input type="submit" value="Predict">
+    </form>
+
+    <h3>Prediction Result:</h3>
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('predict-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const text = document.getElementById('text').value;
+            const model = document.getElementById('model').value;
+
+            // Send the request to the Flask API
+            fetch('http://127.0.0.1:5000/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: text, model: model })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Check if the prediction result contains the expected fields
+                if (data.prediction_class_number !== undefined && data.prediction_label) {
+                    document.getElementById('result').innerHTML = 
+                        'Predicted Status Number: ' + data.prediction_class_number + '<br>' +
+                        'Predicted Status: ' + data.prediction_label;
+                } else {
+                    document.getElementById('result').innerHTML = 
+                        'Error: ' + data.error || 'An unexpected error occurred';
+                }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = 'Request failed: ' + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
