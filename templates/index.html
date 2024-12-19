@@ -58,7 +58,7 @@
             const text = document.getElementById('text').value;
             const model = document.getElementById('model').value;
 
-            // Send the request to the Flask API
+            
             fetch('http://127.0.0.1:5000/predict', {
                 method: 'POST',
                 headers: {
@@ -68,7 +68,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                // Check if the prediction result contains the expected fields
+                
                 if (data.prediction_class_number !== undefined && data.prediction_label) {
                     document.getElementById('result').innerHTML = 
                         'Predicted Status Number: ' + data.prediction_class_number + '<br>' +
